@@ -59,6 +59,7 @@ CREATE FOREIGN TABLE workspace_as PARTITION OF new_workspace FOR VALUES WITH (mo
 CREATE FOREIGN TABLE workspace_na PARTITION OF new_workspace FOR VALUES WITH (modulus 4, remainder 1) SERVER North_America;
 CREATE FOREIGN TABLE workspace_oce PARTITION OF new_workspace FOR VALUES WITH (modulus 4, remainder 0) SERVER Oceania;
 
+select * from new_workspace where region_id = 3;
 
 
 
