@@ -1,0 +1,50 @@
+version: '0.1'
+
+services:
+  europe-instance:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'alex1999'
+      POSTGRES_DB: 'EuropeMODBD'
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  asia-instance:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'alex1999'
+      POSTGRES_DB: 'AsiaMODBD'
+    ports:
+      - 5434:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    
+  north_america-instance:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'alex1999'
+      POSTGRES_DB: 'NorthAmericaMODBD'
+    ports:
+      - 5435:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    
+  oceania-instance:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'alex1999'
+      POSTGRES_DB: 'OceaniaMODBD'
+    ports:
+      - 5436:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
