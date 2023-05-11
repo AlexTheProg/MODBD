@@ -56,7 +56,6 @@ END;
 $$;
 
 CALL delete_user_eu(6);
-DROP procedure delete_user_eu
 
 
 -- procedura pentru inregistrarile din alt server

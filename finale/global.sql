@@ -177,6 +177,16 @@ CREATE FOREIGN TABLE workspace_na PARTITION OF new_workspace FOR VALUES FROM (10
 CREATE FOREIGN TABLE workspace_as PARTITION OF new_workspace FOR VALUES FROM (20) TO (30) SERVER Asia;
 CREATE FOREIGN TABLE workspace_eu PARTITION OF new_workspace FOR VALUES FROM (30) TO (40) SERVER Europe;
 
+INSERT INTO public.new_workspace(
+    workspace_id, workspace_name, description, region_id)
+VALUES (gen_random_uuid(), 'OCE_Workspace', 'OCE_Description6',0);
+
+INSERT INTO public.new_workspace(
+    workspace_id, workspace_name, description, region_id)
+VALUES (gen_random_uuid(), 'EU_Workspace', 'Eu_Description', 30);
+
+SELECT * FROM new_workspace;
+SELECT * FROM workspace_eu;
 
 -- 4 Furnizarea formelor de transparență pentru întreg modelul ales
 -- 4.b transparență pentru fragmentele orizontale
@@ -185,6 +195,10 @@ CREATE FOREIGN TABLE workspace_eu PARTITION OF new_workspace FOR VALUES FROM (30
 create or replace view workspaces
 as
 select * from new_workspace;
+
+INSERT INTO workspaces(
+    workspace_id, workspace_name, description, region_id)
+VALUES (gen_random_uuid(), 'EU_Workspace2', 'Eu_Description2', 32);
 
 -- transparenta fragmentarea derivata
 --Cream conexiuni la tabelele user_** ale celorlalte servere
@@ -265,70 +279,74 @@ select * from "user_oce";
 --trigger care asigura inserarea datelor in fragmentul bun 
 CREATE OR REPLACE FUNCTION users_trigger_fn() RETURNS TRIGGER AS $$
 BEGIN
-IF (TG_OP = 'INSERT') THEN
-    IF (SELECT 1 FROM workspace_eu WHERE workspace_id = NEW.workspace_id) THEN
-        insert into user_eu
-         values (NEW.user_id, NEW.username, NEW.password, NEW.first_name, NEW.last_name, NEW.created_by, NEW.created_date, NEW.last_modified_by, NEW.last_modified_date, NEW.email, NEW.workspace_id);
-    END IF;
-	    IF (SELECT 1 FROM workspace_as WHERE workspace_id = NEW.workspace_id) THEN
-        insert into user_as
-         values (NEW.user_id, NEW.username, NEW.password, NEW.first_name, NEW.last_name, NEW.created_by, NEW.created_date, NEW.last_modified_by, NEW.last_modified_date, NEW.email, NEW.workspace_id);
-    END IF;
-	IF (SELECT 1 FROM workspace_na WHERE workspace_id = NEW.workspace_id) THEN
-        insert into user_na
-         values (NEW.user_id, NEW.username, NEW.password, NEW.first_name, NEW.last_name, NEW.created_by, NEW.created_date, NEW.last_modified_by, NEW.last_modified_date, NEW.email, NEW.workspace_id);
-    END IF;
+    IF (TG_OP = 'INSERT') THEN
+        IF (SELECT 1 FROM workspace_eu WHERE workspace_id = NEW.workspace_id) THEN
+            insert into user_eu
+            values (NEW.user_id, NEW.username, NEW.password, NEW.first_name, NEW.last_name, NEW.created_by, NEW.created_date, NEW.last_modified_by, NEW.last_modified_date, NEW.email, NEW.workspace_id);
+        END IF;
+        IF (SELECT 1 FROM workspace_as WHERE workspace_id = NEW.workspace_id) THEN
+            insert into user_as
+            values (NEW.user_id, NEW.username, NEW.password, NEW.first_name, NEW.last_name, NEW.created_by, NEW.created_date, NEW.last_modified_by, NEW.last_modified_date, NEW.email, NEW.workspace_id);
+        END IF;
+        IF (SELECT 1 FROM workspace_na WHERE workspace_id = NEW.workspace_id) THEN
+            insert into user_na
+            values (NEW.user_id, NEW.username, NEW.password, NEW.first_name, NEW.last_name, NEW.created_by, NEW.created_date, NEW.last_modified_by, NEW.last_modified_date, NEW.email, NEW.workspace_id);
+        END IF;
+        IF (SELECT 1 FROM workspace_oce WHERE workspace_id = NEW.workspace_id) THEN
+            insert into user_oce
+            values (NEW.user_id, NEW.username, NEW.password, NEW.first_name, NEW.last_name, NEW.created_by, NEW.created_date, NEW.last_modified_by, NEW.last_modified_date, NEW.email, NEW.workspace_id);
+        END IF;
 
-END IF;
-IF (TG_OP = 'UPDATE') THEN
-    IF (SELECT 1 FROM workspace_eu WHERE workspace_id = NEW.workspace_id) THEN
-        update user_eu
-        values SET user_id=NEW.user_id, username=NEW.username, password=NEW.password, first_name=NEW.first_name, last_name=NEW.last_name, created_by=NEW.created_by, created_date=NEW.created_date, 
-			last_modified_by=NEW.last_modified_by, last_modified_date=NEW.last_modified_date, email=NEW.email, workspace_id=NEW.workspace_id
-		WHERE user_id = NEW.user_id;	
     END IF;
-	    IF (SELECT 1 FROM workspace_as WHERE workspace_id = NEW.workspace_id) THEN
-        update user_as
-        values SET user_id=NEW.user_id, username=NEW.username, password=NEW.password, first_name=NEW.first_name, last_name=NEW.last_name, created_by=NEW.created_by, created_date=NEW.created_date, 
-			last_modified_by=NEW.last_modified_by, last_modified_date=NEW.last_modified_date, email=NEW.email, workspace_id=NEW.workspace_id
-		WHERE user_id = NEW.user_id;	
+    IF (TG_OP = 'UPDATE') THEN
+        IF (SELECT 1 FROM workspace_eu WHERE workspace_id = NEW.workspace_id) THEN
+            update user_eu
+                values SET user_id=NEW.user_id, username=NEW.username, password=NEW.password, first_name=NEW.first_name, last_name=NEW.last_name, created_by=NEW.created_by, created_date=NEW.created_date,
+                           last_modified_by=NEW.last_modified_by, last_modified_date=NEW.last_modified_date, email=NEW.email, workspace_id=NEW.workspace_id
+            WHERE user_id = NEW.user_id;
+        END IF;
+        IF (SELECT 1 FROM workspace_as WHERE workspace_id = NEW.workspace_id) THEN
+            update user_as
+                values SET user_id=NEW.user_id, username=NEW.username, password=NEW.password, first_name=NEW.first_name, last_name=NEW.last_name, created_by=NEW.created_by, created_date=NEW.created_date,
+                           last_modified_by=NEW.last_modified_by, last_modified_date=NEW.last_modified_date, email=NEW.email, workspace_id=NEW.workspace_id
+            WHERE user_id = NEW.user_id;
+        END IF;
+        IF (SELECT 1 FROM workspace_na WHERE workspace_id = NEW.workspace_id) THEN
+            update user_na
+                values SET user_id=NEW.user_id, username=NEW.username, password=NEW.password, first_name=NEW.first_name, last_name=NEW.last_name, created_by=NEW.created_by, created_date=NEW.created_date,
+                           last_modified_by=NEW.last_modified_by, last_modified_date=NEW.last_modified_date, email=NEW.email, workspace_id=NEW.workspace_id
+            WHERE user_id = NEW.user_id;
+        END IF;
+        IF (SELECT 1 FROM workspace_oce WHERE workspace_id = NEW.workspace_id) THEN
+            update user_oce
+                values SET user_id=NEW.user_id, username=NEW.username, password=NEW.password, first_name=NEW.first_name, last_name=NEW.last_name, created_by=NEW.created_by, created_date=NEW.created_date,
+                           last_modified_by=NEW.last_modified_by, last_modified_date=NEW.last_modified_date, email=NEW.email, workspace_id=NEW.workspace_id
+            WHERE user_id = NEW.user_id;
+        END IF;
     END IF;
-	IF (SELECT 1 FROM workspace_na WHERE workspace_id = NEW.workspace_id) THEN
-        update user_na
-        values SET user_id=NEW.user_id, username=NEW.username, password=NEW.password, first_name=NEW.first_name, last_name=NEW.last_name, created_by=NEW.created_by, created_date=NEW.created_date, 
-			last_modified_by=NEW.last_modified_by, last_modified_date=NEW.last_modified_date, email=NEW.email, workspace_id=NEW.workspace_id
-		WHERE user_id = NEW.user_id;	
+    IF (TG_OP = 'DELETE') THEN
+        IF (SELECT 1 FROM workspace_eu WHERE workspace_id = OLD.workspace_id) THEN
+            DELETE FROM user_eu
+            WHERE user_id = OLD.user_id;
+        END IF;
+        IF (SELECT 1 FROM workspace_as WHERE workspace_id = OLD.workspace_id) THEN
+            DELETE FROM user_as
+            WHERE user_id = OLD.user_id;
+        END IF;
+        IF (SELECT 1 FROM workspace_na WHERE workspace_id = OLD.workspace_id) THEN
+            DELETE FROM user_na
+            WHERE user_id = OLD.user_id;
+        END IF;
+        IF (SELECT 1 FROM workspace_oce WHERE workspace_id = OLD.workspace_id) THEN
+            DELETE FROM user_oce
+            WHERE user_id = OLD.user_id;
+        END IF;
     END IF;
-	    IF (SELECT 1 FROM workspace_oce WHERE workspace_id = NEW.workspace_id) THEN
-        update user_oce
-        values SET user_id=NEW.user_id, username=NEW.username, password=NEW.password, first_name=NEW.first_name, last_name=NEW.last_name, created_by=NEW.created_by, created_date=NEW.created_date, 
-			last_modified_by=NEW.last_modified_by, last_modified_date=NEW.last_modified_date, email=NEW.email, workspace_id=NEW.workspace_id
-		WHERE user_id = NEW.user_id;	
-    END IF;
-END IF;
-IF (TG_OP = 'DELETE') THEN
-    IF (SELECT 1 FROM workspace_eu WHERE workspace_id = NEW.workspace_id) THEN
-        DELETE FROM user_eu
-        WHERE user_id = NEW.user_id;	
-    END IF;
-	    IF (SELECT 1 FROM workspace_as WHERE workspace_id = NEW.workspace_id) THEN
-        DELETE FROM user_as
-        WHERE user_id = NEW.user_id;	
-    END IF;
-	IF (SELECT 1 FROM workspace_na WHERE workspace_id = NEW.workspace_id) THEN
-        DELETE FROM user_na
-        WHERE user_id = NEW.user_id;	
-    END IF;
-	IF (SELECT 1 FROM workspace_oce WHERE workspace_id = NEW.workspace_id) THEN
-        DELETE FROM user_oce
-        WHERE user_id = NEW.user_id;	
-    END IF;
-END IF;	
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER users_trigger
-INSTEAD OF INSERT OR UPDATE ON users
+INSTEAD OF INSERT OR UPDATE OR DELETE ON "users"
 FOR EACH ROW EXECUTE FUNCTION users_trigger_fn();
 
