@@ -1,5 +1,12 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+CREATE TABLE IF NOT EXISTS workspace (
+                                         workspace_id uuid PRIMARY KEY,
+                                         workspace_name VARCHAR(100) UNIQUE NOT NULL,
+    description VARCHAR(255) UNIQUE NOT NULL,
+    region VARCHAR(2) UNIQUE NOT NULL
+    );
+
 CREATE TABLE IF NOT EXISTS "user" (
 	user_id INTEGER PRIMARY KEY,
 	username VARCHAR(50) unique not null,
@@ -25,12 +32,6 @@ CREATE TABLE IF NOT EXISTS user_authority (
 	CONSTRAINT user_authority_pkey PRIMARY KEY (user_id, authority_id)
 );
 
-CREATE TABLE IF NOT EXISTS workspace (
-	workspace_id uuid PRIMARY KEY,
-	workspace_name VARCHAR(100) UNIQUE NOT NULL,
-	description VARCHAR(255) UNIQUE NOT NULL,
-	region VARCHAR(2) UNIQUE NOT NULL
-);
 
 CREATE TABLE IF NOT EXISTS document (
 	document_id INTEGER PRIMARY KEY,
